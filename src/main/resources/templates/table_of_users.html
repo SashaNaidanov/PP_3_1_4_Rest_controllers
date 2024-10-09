@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <title>Spring Security Example</title>
+    <meta charset="UTF-8">
+    <title>Users</title>
     <style>
         table, td, th {
             border-collapse: collapse;
@@ -11,18 +13,19 @@
 </head>
 <body>
 
-<h1>User, welcome spring boot security page!</h1>
-<h2>Personal info:</h2>
+<h1>Table of users</h1>
 <table>
     <tr>
         <th>FirstName</th>
         <th>LastName</th>
         <th>Email</th>
         <th>Authority</th>
+        <th>Operations</th>
     </tr>
-    <tr>
-        <td th:text="${user.getFirstName()}">first name</td>
-        <td th:text="${user.getLastName()}">last name</td>
+    <tr th:each="user : ${users}">
+
+        <td th:text="${user.getFirstName()}">model</td>
+        <td th:text="${user.getLastName()}">series</td>
         <td th:text="${user.getEmail()}">email</td>
         <td>
             <div th:each="role : ${user.getRoles()}">
@@ -30,9 +33,19 @@
                 <br/>
             </div>
         </td>
+        <td>
+            <a href="admin/updateInfo" th:href="@{/admin/updateInfo(userId=${user.getId()})}">Update user</a>
+            <br/>
+            <a href="admin/delete" th:href="@{/admin/delete(userId=${user.getId()})}">Delete user</a>
+        </td>
     </tr>
 </table>
 
+<br/>
+
+<a th:href="@{/admin/addUser}">Add user</a>
+
+<br/>
 <br/>
 <form th:action="@{/logout}" th:method="POST">
     <input type="submit" value="Logout">
