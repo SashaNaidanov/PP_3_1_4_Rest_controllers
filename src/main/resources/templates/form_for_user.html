@@ -9,8 +9,6 @@
 
 <form th:method="POST" th:action="@{/admin}" th:object="${user}">
     <input type="hidden" th:field="*{id}">
-    <input type="hidden" th:field="*{username}">
-    <input type="hidden" th:field="*{password}">
     <br/>
     <label for="firstName">Enter first name:</label>
     <input type="text" th:field="*{firstName}" id="firstName"/>
@@ -24,10 +22,22 @@
     <input type="text" th:field="*{email}" id="email"/>
     <div style="color: crimson" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
     <br/>
-    <th:block th:each="role: ${roles}">
-        <input type="checkbox" th:field="*{roles}"
-               th:text="${role.getRole()}" th:value="${role.id}" id="roles"/>
-    </th:block>
+    <label for="username">Enter username:</label>
+    <input type="text" th:field="*{username}" id="username"/>
+    <div style="color: crimson" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username error</div>
+    <br/>
+    <label for="password">Enter password:</label>
+    <input type="text" th:field="*{password}" id="password"/>
+    <div style="color: crimson" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</div>
+    <br/>
+    <label>Roles:
+        <input type="checkbox" name="roles"
+               th:each="role : ${roles}"
+               th:text="${role.getRole()}"
+               th:value="${role.id}"
+               th:field="*{roles}"
+        />
+    </label>
     <br/>
     <input type="submit" value="Ok"/>
 </form>

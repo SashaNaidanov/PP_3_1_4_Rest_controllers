@@ -38,13 +38,17 @@ public class User implements UserDetails {
             regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z]+\\.[a-zA-Z]+$")
     private String email;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
+    @NotEmpty(message = "Username shouldn't be empty")
+    @Pattern(message = "Name should be formed like this: xxxxx",
+            regexp = "[a-z]{1}[a-z]{1,23}")
     private String username;
 
     @Column(name = "password")
+    @NotEmpty(message = "Password shouldn't be empty")
     private String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
