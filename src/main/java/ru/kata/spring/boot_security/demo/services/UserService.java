@@ -25,8 +25,19 @@ public class UserService {
 
     @Transactional
     public void add(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        if (user.getId() == null) {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+            return;
+        }
+        User userFromDataBase = userRepository.getById(user.getId());
+        if (user.getPassword().isEmpty()) {
+            user.setPassword(userFromDataBase.getPassword());
+            userRepository.save(user);
+        } else {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+        }
     }
 
     public User getUserById(Long id) {

@@ -23,6 +23,6 @@ public class MainController {
     public String pageForInfo(Principal principal, Model model) {
         User user = userDetailsService.findByUsername(principal.getName());
         model.addAttribute("user", user);
-        return "user";
+        return "user_panel";
     }
 }

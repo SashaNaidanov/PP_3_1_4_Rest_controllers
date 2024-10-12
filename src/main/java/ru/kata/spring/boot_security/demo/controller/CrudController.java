@@ -3,14 +3,14 @@ package ru.kata.spring.boot_security.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
+import ru.kata.spring.boot_security.demo.services.UserDetailsServiceImpl;
 import ru.kata.spring.boot_security.demo.services.UserService;
-import ru.kata.spring.boot_security.demo.util.UserValidator;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/admin")
@@ -20,44 +20,29 @@ public class CrudController {
 
     private final RoleService roleService;
 
-    private final UserValidator userValidator;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    public CrudController(UserService userService, RoleService roleService, UserValidator userValidator) {
+    public CrudController(UserService userService, RoleService roleService, UserDetailsServiceImpl userDetailsService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.userValidator = userValidator;
+        this.userDetailsService = userDetailsService;
     }
 
     @GetMapping
-    public String getUsers(Model model) {
+    public String getUsers(Principal principal, Model model) {
+        User user = userDetailsService.findByUsername(principal.getName());
+        model.addAttribute("userSession", user);
         model.addAttribute("users", userService.getAllUsers());
-        return "table_of_users";
-    }
-
-    @GetMapping("/addUser")
-    public String addUser(@ModelAttribute("user") User user, Model model) {
         model.addAttribute("roles", roleService.getListOfRoles());
-        return "form_for_user";
+        model.addAttribute("emptyUser", new User());
+        return "admin_panel";
     }
 
     @PostMapping
-    public String createUser(@ModelAttribute("user") @Valid User user,
-                             BindingResult bindingResult, Model model) {
-        userValidator.validate(user, bindingResult);
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("roles", roleService.getListOfRoles());
-            return "form_for_user";
-        }
+    public String createUser(@ModelAttribute("user") @Valid User user) {
         userService.add(user);
         return "redirect:/admin";
-    }
-
-    @GetMapping("/updateInfo")
-    public String updateUser(@RequestParam(name = "userId") Long id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
-        model.addAttribute("roles", roleService.getListOfRoles());
-        return "form_for_user";
     }
 
     @GetMapping("/delete")

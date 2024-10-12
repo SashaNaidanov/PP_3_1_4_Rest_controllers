@@ -4,12 +4,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -22,30 +20,21 @@ public class User implements UserDetails {
 
     @Column(name = "name")
     @NotEmpty(message = "Name shouldn't be empty")
-    @Pattern(message = "Name should be formed like this: Xxxxx",
-            regexp = "[A-Z]{1}[a-z]{1,23}")
     private String firstName;
 
     @Column(name = "last_name")
     @NotEmpty(message = "Last name shouldn't be empty")
-    @Pattern(message = "Last name should be formed like this: Xxxxx",
-            regexp = "[A-Z]{1}[a-z]{1,23}")
     private String lastName;
 
     @Column(name = "email")
     @NotEmpty(message = "Email shouldn't be empty")
-    @Email(message = "Email should be valid",
-            regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z]+\\.[a-zA-Z]+$")
     private String email;
 
     @Column(name = "username", unique = true)
     @NotEmpty(message = "Username shouldn't be empty")
-    @Pattern(message = "Name should be formed like this: xxxxx",
-            regexp = "[a-z]{1}[a-z]{1,23}")
     private String username;
 
     @Column(name = "password")
-    @NotEmpty(message = "Password shouldn't be empty")
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -54,7 +43,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> roles;
+    private Set<Role> roles;
 
     public User() {
 
@@ -144,11 +133,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
