@@ -4,15 +4,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.services.UserService;
+import ru.kata.spring.boot_security.demo.services.UserDetailsServiceImpl;
+
+import java.util.Objects;
 
 @Component
 public class UserValidator implements Validator {
 
-    private final UserService userService;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    public UserValidator(UserService userService) {
-        this.userService = userService;
+    public UserValidator(UserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -22,9 +24,9 @@ public class UserValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        try {
-            userService.add((User) target);
-        } catch (Exception e) {
+        User userFromAddForm = (User) target;
+        User userFromDataBase = userDetailsService.findByUsername(userFromAddForm.getUsername());
+        if (userFromDataBase != null && !(Objects.equals(userFromAddForm.getId(), userFromDataBase.getId()))) {
             errors.rejectValue("username", "", "User with this username has already exist");
         }
     }
