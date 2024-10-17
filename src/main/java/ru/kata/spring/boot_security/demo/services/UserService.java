@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
+import ru.kata.spring.boot_security.demo.util.UserNotFoundException;
 
 import java.util.List;
 
@@ -41,11 +42,18 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        return userRepository.getById(id);
+        User user = userRepository.getById(id);
+        if (user == null) {
+            throw new UserNotFoundException("User with this id do not exist!");
+        }
+        return user;
     }
 
     @Transactional
     public void remove(Long id) {
+        if (userRepository.getById(id) == null) {
+            throw new UserNotFoundException("User with this id do not exist!");
+        }
         userRepository.deleteById(id);
     }
 
